@@ -1,0 +1,7 @@
+select a,b,c,d
+from @OI oi
+left join @ALLPRDMFU allprod
+on allprod.fieldid=oi.fieldid
+and allprod.product='@product'
+and allprod.ods='@allprdods'
+where trim(oi.fieldid) in (@NA_WHERE)

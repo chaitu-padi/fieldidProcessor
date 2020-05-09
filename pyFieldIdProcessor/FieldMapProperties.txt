@@ -1,0 +1,4 @@
+field1,not applicable
+field2,winnow
+field3,not applicable
+field4,winnow

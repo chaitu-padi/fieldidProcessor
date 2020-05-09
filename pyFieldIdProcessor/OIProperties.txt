@@ -1,0 +1,7 @@
+1	fieldid	not applicable	should be blank
+2	fieldid_2	winnow	 sum(a)/1000 where a>0
+3	fieldid_3	winnow	 sum(b)/1000 where b>0
+4	fieldid_4	not applicable	should be blank
+5	fieldid_5	not applicable	should be blank
+6	fieldid_6	not applicable	should be blank
+7	fieldid_7	winnow	 sum(c)/1000

@@ -1,0 +1,18 @@
+select a,rpt_value,c,d
+from @OI oi
+left join
+(select
+a,@LOGICCAL as rpt_value
+from @WINNOW
+where trim(process_date)='@process_date'
+and trim(data_src)='@data_src'
+and trim(source_country_code)='@source_country_code'
+and prd_segmt_cd='@prd_segmt_cd'
+@LOGICWHERE
+group by psegmt) tmp
+on tmp.psegmt=oi.pip_prop_segmt
+left join @ALLPRDMFU allprod
+on allprod.fieldid=oi.fieldid
+and allprod.product='@product'
+and allprod.ods='@allprdods'
+where trim(oi.fieldid) in (@WINNOW_WHERE);

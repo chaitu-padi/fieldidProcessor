@@ -1,0 +1,7 @@
+data_src=CARDS
+source_country_cd=AE
+process_date=20190930
+allprdods=2019_09_30_001
+prd_segmt_cd=Cards
+rundate=2020032010823
+product=CC

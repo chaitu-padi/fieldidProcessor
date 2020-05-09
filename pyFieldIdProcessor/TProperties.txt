@@ -1,0 +1,4 @@
+WINNOW=winnow_rpt
+MFU=mfu_table
+ALLPRDMFU=allprod_mfu
+OI=oi_table
