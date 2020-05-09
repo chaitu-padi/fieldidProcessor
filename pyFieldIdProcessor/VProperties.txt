@@ -5,3 +5,5 @@ allprdods=2019_09_30_001
 prd_segmt_cd=Cards
 rundate=2020032010823
 product=CC
+currency=AED
+snap_dt=2019-09-30

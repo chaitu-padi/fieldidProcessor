@@ -1,0 +1,19 @@
+select 'WINNOW' as use_case, null as act_bud_ind, cast('@snap_dt' as DATE) as snap_dt, @prd_segmt_cd as pip_prod_segmt,
+OI.FIELDID, '' as FIELD_DESC, OI.MEASURE, OI.RPT_UNIT, '@currency' as RPTG_cury, nvl(temp.RPT_LCY_VALUE,0) as RPT_LCY_VALUE,
+COALESCE(MFU.budget_year_end, '') as budget,'' as EXCHG_RATE, '' as RPT_USD_VALUE, COALESCE(MFU.card_hudle_sign,'') as cad_hurd_sign,
+'USD' as CAD_HURD_RPTUNIT, COALESCE(MFU.cad_hurdle_value,'') as CAD_HURD_RPTVALUE, '@product' as RPTSHEET_NAME, OI.LOGIC
+FROM @OI OI
+LEFT JOIN (
+SELECT PIP_PROD_SEGMT , @LOGICCAL as rpt_lcy_value
+FROM @WINNOW where trim(process_Date) = '@process_date' and trim(data_src) = '@data_src'
+and source_country_code = '@source_country_code' and report_rundate='@rundate'
+and PIP_PROD_SEGMT = '@prd_segmt_cd'
+@LOGICWHERE
+group by PIP_PROD_SEGMT) TEMP
+on TEMP.PIP_PROD_SEGMT = OI.PIP_PROD_SEGMT
+
+LEFT JOIN @ALLPRDMFU MFU
+on MFU.FIELD_ID = OI.FIELD_ID
+AND MFU.PRODUCT = '@product'
+and MFU.ODS='@allprdods'
+where OI.FIELDID=@WINNOW_WHERE

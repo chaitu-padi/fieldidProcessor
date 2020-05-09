@@ -9,6 +9,7 @@ def main():
     variableprop = {}
 
     FieldSet = {'winnow': defaultdict(list), 'na': defaultdict(list), 'mfu': defaultdict(list), 'nb_mfu': defaultdict(list), 'formula': defaultdict(list)}
+    FullFieldSet = {}
 
     vfile = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\VProperties.txt", "r")
     if vfile.mode == "r":
@@ -45,15 +46,19 @@ def main():
             if a[2].strip().lower() == 'winnow':
                 FieldSet['winnow'][a[1].strip()].append(a[3].strip())
                 FieldSet['winnow'][a[1].strip()].append(a[0].strip())
+                FullFieldSet[a[1].strip()] = a[3].strip()
             elif a[2].strip().lower() == "not applicable":
                 FieldSet['na'][a[1].strip()].append(a[3].strip())
                 FieldSet['na'][a[1].strip()].append(a[0].strip())
+                FullFieldSet[a[1].strip()] = a[3].strip()
             elif a[2].strip().lower() == "mfu":
                 FieldSet['mfu'][a[1].strip()].append(a[3].strip())
                 FieldSet['mfu'][a[1].strip()].append(a[0].strip())
-            elif a[2].strip().lower() == "formula":
+                FullFieldSet[a[1].strip()] = (a[3].strip())
+            elif a[2].strip().lower() == "formula field":
                 FieldSet['formula'][a[1].strip()].append(a[3].strip())
                 FieldSet['formula'][a[1].strip()].append(a[0].strip())
+                FullFieldSet[a[1].strip()] = (a[3].strip())
     OIfile.close()
     #for a, b in FieldSet['winnow'].items():
     #    print(a, b[0])
@@ -80,7 +85,7 @@ def main():
         nawriter.close()
         na.close()
     createNA()
-
+    '''
     def createWinnow():
         winnowFields = FieldSet['winnow'].keys()
         winnow = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\WINNOWTemplate.txt", "r")
@@ -115,7 +120,7 @@ def main():
         winnow.close()
 
     #createWinnow()
-
+    '''
 
 
 
@@ -156,9 +161,68 @@ def main():
             winnowwriter = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\output\\WINNOW.hql", "w")
             winnowwriter.writelines(finalout)
             winnowwriter.close()
-            winnow.close()
+        winnow.close()
 
     createWinnow1()
+
+    def createFormula():
+        formulaFields = FieldSet['formula'].keys()
+        #print(FullFieldSet.viewitems())
+        winnowFieldsForFormula = []
+        formula = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\FORMULATemplate.txt", "r")
+        formulatemplate = formula.read()
+        finalout = []
+        for ff in formulaFields:
+            logicwhere = []
+            logiccode = []
+            min = FieldSet['formula'].get(ff)[0].strip().split(":")[0].replace('SUM(', '')
+            max = FieldSet['formula'].get(ff)[0].strip().split(":")[1].replace(')', '')
+            fieldmin = str(min)[-4:]
+            fieldmax = str(max)[-4:]
+            fieldprefix = str(min)[:-4]
+            print(fieldprefix, fieldmax, fieldmin)
+            dependentFields = []
+            for i in range(int(fieldmin), int(fieldmax)+1):
+                dependentFields.append(fieldprefix+str(i).zfill(4))
+            print(dependentFields)
+            for df in dependentFields:
+                logic = FullFieldSet.get(df)
+                logicarraylength = len(re.split(" where ", logic, flags=re.IGNORECASE))
+                if logicarraylength == 2:
+                    logiccode.append(re.split(" where ", logic, flags=re.IGNORECASE)[0].lower().strip())
+                    wheretemp = re.split(" where ", logic, flags=re.IGNORECASE)[1].lower().strip()
+                    wherelist = re.split(" and ", wheretemp , flags=re.IGNORECASE)
+                    logicwhere.extend(wherelist)
+                else:
+                    logiccode.append(re.split(" where ", logic, flags=re.IGNORECASE)[0])
+            logiccode = ''.join(set(logiccode))
+            logicwhere = ' and ' + ' and '.join(set(logicwhere))
+
+            finaltemp = formulatemplate.replace('@WINNOW_WHERE', '\'' + ff + '\'') \
+                .replace('@OI', tableprop.get('OI').strip()) \
+                .replace('@WINNOW', tableprop.get('WINNOW').strip()) \
+                .replace('@ALLPRDMFU', tableprop.get('ALLPRDMFU').strip()) \
+                .replace('@process_date', variableprop.get('process_date').strip()) \
+                .replace('@data_src', variableprop.get('data_src').strip()) \
+                .replace('@source_country_code', variableprop.get('source_country_cd').strip()) \
+                .replace('@prd_segmt_cd', variableprop.get('prd_segmt_cd').strip()) \
+                .replace('@product', variableprop.get('product').strip()) \
+                .replace('@allprdods', variableprop.get('allprdods')) \
+                .replace('@LOGICCAL', logiccode) \
+                .replace('@LOGICWHERE', logicwhere)\
+                .replace('@rundate', variableprop.get('rundate'))\
+                .replace('@snap_dt', variableprop.get('snap_dt'))\
+                .replace('@currency', variableprop.get('currency'))
+            finalout.append(finaltemp)
+        if ff != formulaFields[-1]:
+            finalout.append("\n\nunion all\n\n")
+            print(finalout)
+        formulawriter = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\output\\FORMULA.hql", "w")
+        formulawriter.writelines(finalout)
+        formulawriter.close()
+        formula.close()
+
+    createFormula()
 
 
 if __name__=="__main__":

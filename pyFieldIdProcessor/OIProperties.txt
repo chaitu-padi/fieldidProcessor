@@ -1,7 +1,8 @@
-1	fieldid	not applicable	should be blank
-2	fieldid_2	winnow	 sum(a)/1000 where a>0
-3	fieldid_3	winnow	 sum(b)/1000 where b>0
-4	fieldid_4	not applicable	should be blank
-5	fieldid_5	not applicable	should be blank
-6	fieldid_6	not applicable	should be blank
-7	fieldid_7	winnow	 sum(c)/1000
+1	fieldid_0001	not applicable	should be blank
+2	fieldid_0002	winnow	 sum(a)/1000 where a>0
+3	fieldid_0003	winnow	 sum(a)/1000 where b>0 and c > 10
+4	fieldid_0004	Not Applicable	should be blank
+5	fieldid_0005	Not Applicable	should be blank
+6	fieldid_0006	Not Applicable	should be blank
+7	fieldid_0007	winnow	 sum(c)/1000
+8	fieldid_0000	Formula Field	SUM(fieldid_0002:fieldid_0003)
