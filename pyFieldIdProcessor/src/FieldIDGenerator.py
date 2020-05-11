@@ -175,7 +175,7 @@ def main():
         for ff in formulaFields:
             logicwhere = []
             logiccode = []
-            min = FieldSet['formula'].get(ff)[0].strip().split(":")[0].replace('SUM(', '')
+            min = FieldSet['formula'].get(ff)[0].strip().split(":")[0].replace('SUM(', '').replace('sum(', '').replace('sum (', '').replace('SUM (', '')
             max = FieldSet['formula'].get(ff)[0].strip().split(":")[1].replace(')', '')
             fieldmin = str(min)[-4:]
             fieldmax = str(max)[-4:]
