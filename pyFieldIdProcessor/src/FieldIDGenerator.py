@@ -187,35 +187,51 @@ def main():
             print(dependentFields)
             for df in dependentFields:
                 logic = FullFieldSet.get(df)
+                print(logic, df)
                 logicarraylength = len(re.split(" where ", logic, flags=re.IGNORECASE))
-                if logicarraylength == 2:
+                if logic.lower().strip() == 'should be blank' or logic.lower().strip() == '':
+                    print("its blank for formula dependent fieldid: " + df + " and logic: " + logic)
+                elif logicarraylength == 2:
+                    print('==2'+"coming here")
                     logiccode.append(re.split(" where ", logic, flags=re.IGNORECASE)[0].lower().strip())
                     wheretemp = re.split(" where ", logic, flags=re.IGNORECASE)[1].lower().strip()
-                    wherelist = re.split(" and ", wheretemp , flags=re.IGNORECASE)
+                    wherelist = re.split(" and ", wheretemp, flags=re.IGNORECASE)
                     logicwhere.extend(wherelist)
                 else:
                     logiccode.append(re.split(" where ", logic, flags=re.IGNORECASE)[0])
-            logiccode = ''.join(set(logiccode))
-            logicwhere = ' and ' + ' and '.join(set(logicwhere))
 
-            finaltemp = formulatemplate.replace('@WINNOW_WHERE', '\'' + ff + '\'') \
-                .replace('@OI', tableprop.get('OI').strip()) \
-                .replace('@WINNOW', tableprop.get('WINNOW').strip()) \
-                .replace('@ALLPRDMFU', tableprop.get('ALLPRDMFU').strip()) \
-                .replace('@process_date', variableprop.get('process_date').strip()) \
-                .replace('@data_src', variableprop.get('data_src').strip()) \
-                .replace('@source_country_code', variableprop.get('source_country_cd').strip()) \
-                .replace('@prd_segmt_cd', variableprop.get('prd_segmt_cd').strip()) \
-                .replace('@product', variableprop.get('product').strip()) \
-                .replace('@allprdods', variableprop.get('allprdods')) \
-                .replace('@LOGICCAL', logiccode) \
-                .replace('@LOGICWHERE', logicwhere)\
-                .replace('@rundate', variableprop.get('rundate'))\
-                .replace('@snap_dt', variableprop.get('snap_dt'))\
-                .replace('@currency', variableprop.get('currency'))
-            finalout.append(finaltemp)
-        if ff != formulaFields[-1]:
-            finalout.append("\n\nunion all\n\n")
+            logiccode = ''.join(set(logiccode))
+            logicwhere = ' and '.join(set(logicwhere))
+            print("====logiccode====="+logiccode)
+            if len(logiccode) != 0:
+                finaltemp = formulatemplate.replace('@WINNOW_WHERE', '\'' + ff + '\'') \
+                    .replace('@OI', tableprop.get('OI').strip()) \
+                    .replace('@WINNOW', tableprop.get('WINNOW').strip()) \
+                    .replace('@ALLPRDMFU', tableprop.get('ALLPRDMFU').strip()) \
+                    .replace('@process_date', variableprop.get('process_date').strip()) \
+                    .replace('@data_src', variableprop.get('data_src').strip()) \
+                    .replace('@source_country_code', variableprop.get('source_country_cd').strip()) \
+                    .replace('@prd_segmt_cd', variableprop.get('prd_segmt_cd').strip()) \
+                    .replace('@product', variableprop.get('product').strip()) \
+                    .replace('@allprdods', variableprop.get('allprdods')) \
+                    .replace('@LOGICCAL', logiccode) \
+                    .replace('@LOGICWHERE', logicwhere)\
+                    .replace('@rundate', variableprop.get('rundate'))\
+                    .replace('@snap_dt', variableprop.get('snap_dt'))\
+                    .replace('@currency', variableprop.get('currency'))
+                finalout.append(finaltemp)
+            else:
+                print(logiccode)
+                nat = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\NATemplate.txt", "r")
+                nattemplate = nat.read()
+                finaltemp = nattemplate.replace('@NA_WHERE', '\'' + ff + '\'') \
+                    .replace('@OI', tableprop.get('OI').strip()) \
+                    .replace('@ALLPRDMFU', tableprop.get('ALLPRDMFU').strip()) \
+                    .replace('@product', variableprop.get('product').strip()) \
+                    .replace('@allprdods', variableprop.get('allprdods').strip())
+                finalout.append(finaltemp)
+            if ff != formulaFields[-1]:
+                finalout.append("\n\nunion all\n\n")
             print(finalout)
         formulawriter = open("C:\\Users\\Chaitu-Padi\\PycharmProjects\\pyFieldIdProcessor\\output\\FORMULA.hql", "w")
         formulawriter.writelines(finalout)

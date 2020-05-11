@@ -8,7 +8,7 @@ SELECT PIP_PROD_SEGMT , sum(a)/1000 as rpt_lcy_value
 FROM winnow_rpt where trim(process_Date) = '20190930' and trim(data_src) = 'CARDS'
 and source_country_code = 'AE' and report_rundate='2020032010823'
 and PIP_PROD_SEGMT = 'Cards'
- and c > 10 and b>0 and a>0
+c > 10 and b>0 and a>0
 group by PIP_PROD_SEGMT) TEMP
 on TEMP.PIP_PROD_SEGMT = OI.PIP_PROD_SEGMT
 
@@ -17,3 +17,14 @@ on MFU.FIELD_ID = OI.FIELD_ID
 AND MFU.PRODUCT = 'CC'
 and MFU.ODS='2019_09_30_001'
 where OI.FIELDID='fieldid_0000'
+
+
+union all
+
+select a,b,c,d
+from oi_table oi
+left join allprod_mfu allprod
+on allprod.fieldid=oi.fieldid
+and allprod.product='CC'
+and allprod.ods='2019_09_30_001'
+where trim(oi.fieldid) in ('fieldid_2000')
